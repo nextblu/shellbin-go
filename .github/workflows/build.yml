@@ -1,0 +1,103 @@
+name: Release Build
+
+on:
+  create:
+  push:
+    tags:
+      - v*
+
+jobs:
+  build-ubuntu:
+    name: Ubuntu Build
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Setup Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: ^1.15
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v2
+    - name: Build
+      run: go build -v .
+    - name: Upload build artifact
+      id: upload-build-artifact-ubuntu
+      uses: actions/upload-artifact@v2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        name: shellbin
+        path: ./shellbin
+  build-windows:
+    name: Windows Build
+    runs-on: windows-2019
+    steps:
+    - name: Setup Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: ^1.15
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v2
+    - name: Build
+      run: go build -v .
+    - name: Upload build artifact
+      id: upload-build-artifact-windows
+      uses: actions/upload-artifact@v2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        name: shellbin.exe
+        path: ./shellbin.exe
+  release:
+    runs-on: ubuntu-latest
+    needs: [build-ubuntu, build-windows]
+    steps:
+    - name: Download Linux Artifact
+      id: download_linux_artifact
+      uses: actions/download-artifact@v2.0.5
+      with:
+        name: shellbin
+        path: ./shellbin
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Download Windows Artifact
+      id: download_windows_artifact
+      uses: actions/download-artifact@v2.0.5
+      with:
+        name: shellbin.exe
+        path: ./shellbin.exe
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Create a Release
+      id: create_release
+      uses: actions/create-release@v1.1.4
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        body: New version of Shellbin is out!
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}            
+    - name: Upload Linux Binary
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./shellbin
+        asset_name: shellbin
+        asset_content_type: application/x-executable
+    - name: Upload Windows Binary
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./shellbin.exe
+        asset_name: shellbin.exe
+        asset_content_type: application/x-dosexec
+    
+    # For now we avoid the testing phase
+    #- name: Test
+     # run: go test -v .
