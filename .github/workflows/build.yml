@@ -56,7 +56,7 @@ jobs:
       uses: actions/download-artifact@v2.0.5
       with:
         name: shellbin
-        path: ./artifacts
+        path: ./
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Download Windows Artifact
@@ -64,7 +64,7 @@ jobs:
       uses: actions/download-artifact@v2.0.5
       with:
         name: shellbin.exe
-        path: ./artifacts
+        path: ./
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Create a Release
@@ -78,8 +78,6 @@ jobs:
         prerelease: false
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - name: 'Echo download path'
-      run: echo ${{steps.download.outputs.download-path}}
     - name: Display structure of downloaded files
       run: ls -R    
     - name: Upload Linux Binary
@@ -88,7 +86,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./artifacts
+        asset_path: shellbin
         asset_name: shellbin
         asset_content_type: application/x-executable
     - name: Upload Windows Binary
@@ -97,7 +95,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./artifacts
+        asset_path: shellbin.exe
         asset_name: shellbin.exe
         asset_content_type: application/x-dosexec
     
