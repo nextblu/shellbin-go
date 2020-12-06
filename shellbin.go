@@ -19,8 +19,7 @@ func main() {
 	if err != nil {
 		os.Exit(1)
 	}
-	fmt.Println("\x1B[36m ShellBin\033[0m")
-	fmt.Printf("Here is your bin: https://shellbin.nextblu.com/#/bin/%s\n", response)
+	fmt.Printf("https://shellbin.nextblu.com/#/bin/%s", response)
 }
 
 func getDataFromStdin() string {
