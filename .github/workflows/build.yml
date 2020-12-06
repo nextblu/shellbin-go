@@ -83,7 +83,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        upload_url: ${{ steps.release.outputs.upload_url }}
+        # upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: ./shellbin
         asset_name: shellbin
         asset_content_type: application/x-executable
@@ -92,7 +93,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        upload_url: ${{ steps.release.outputs.upload_url }}
+        #upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: ./shellbin.exe
         asset_name: shellbin.exe
         asset_content_type: application/x-dosexec
